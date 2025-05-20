@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Мой Мемхаб</title>
+    <meta name="description" content="Сайт для обмена мемами на русском языке. Делитесь смешными картинками, видео и историями с друзьями!">
+    <meta name="keywords" content="мемы, смешные картинки, видео, юмор, русский язык, мемы на русском, мемы 2024, приколы">
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="styles.css"> </head>
+<body class="bg-gray-100">
+    <header class="bg-purple-600 text-white py-4 text-center rounded-b-md shadow-md">
+        <h1 class="text-2xl font-semibold">Мой Мемхаб</h1>
+        <p class="text-lg">Сайт для ваших любимых мемов!</p>
+    </header>
+
+    <main class="container mx-auto mt-4 p-4">
+        <div class="upload-form">
+            <h2 class="text-xl font-semibold mb-2 text-blue-600">Загрузить Мем</h2>
+            <form id="uploadForm" class="space-y-4">
+                <div>
+                    <label for="title" class="block text-gray-700 text-sm font-bold mb-2">Название:</label>
+                    <input type="text" id="title" name="title" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required>
+                    <div id="title-error" class="text-red-500 text-xs italic" style="display: none;"></div>
+                </div>
+                <div>
+                    <label for="description" class="block text-gray-700 text-sm font-bold mb-2">Описание:</label>
+                    <textarea id="description" name="description" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"></textarea>
+                    <div id="description-error" class="text-red-500 text-xs italic" style="display: none;"></div>
+                </div>
+                <div>
+                    <label for="content" class="block text-gray-700 text-sm font-bold mb-2">Мем (картинка или видео):</label>
+                    <input type="file" id="content" name="content" accept="image/*,video/*" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required>
+                     <div id="content-error" class="text-red-500 text-xs italic" style="display: none;"></div>
+                </div>
+                <button type="submit" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Загрузить</button>
+            </form>
+        </div>
+
+        <div id="memes" class="mt-4">
+            <h2 class="text-xl font-semibold mb-2 text-purple-600">Последние Мемы</h2>
+            </div>
+    </main>
+
+    <footer class="bg-gray-800 text-white py-4 text-center mt-8 rounded-t-md shadow-md">
+        <p>© 2024 Мой Мемхаб. Все права защищены.</p>
+        <p>Сделано с любовью и юмором.</p>
+    </footer>
+
+    <script src="script.js"></script> </body>
+</html>
