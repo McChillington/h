@@ -14,10 +14,22 @@
     <link rel="stylesheet" href="styles.css"> <script type="module">
         // Import Firebase modules
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, collection, addDoc, onSnapshot, query, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // Expose Firebase and its modules globally for script.js
+        // IMPORTANT: Replace these with YOUR ACTUAL Firebase project configuration!
+        // You can find this in your Firebase project settings -> Project settings -> Your apps -> Web app -> Config
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_AUTH_DOMAIN",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_STORAGE_BUCKET",
+            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+            appId: "YOUR_APP_ID"
+        };
+
+        // Global variables for Firebase instances and state
+        // These are exposed globally so script.js can access them
         window.firebase = {
             app: null,
             auth: null,
@@ -31,63 +43,45 @@
             },
             getAuth: getAuth,
             signInAnonymously: signInAnonymously,
-            signInWithCustomToken: signInWithCustomToken,
-            onAuthStateChanged: onAuthStateChanged
+            onAuthStateChanged: onAuthStateChanged,
+            config: firebaseConfig // Expose config globally for script.js
         };
 
-        // Global variables for Firebase instances and state
         window.currentUserId = null;
         window.isFirebaseReady = false;
 
-        // Get app ID and Firebase config from the environment
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-        const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
+        // Initialize Firebase with your provided configuration
+        window.firebase.app = initializeApp(firebaseConfig);
+        window.firebase.firestore.db = getFirestore(window.firebase.app);
+        window.firebase.auth = getAuth(window.firebase.app);
 
-        // Initialize Firebase if config is available
-        if (Object.keys(firebaseConfig).length > 0) {
-            window.firebase.app = initializeApp(firebaseConfig);
-            window.firebase.firestore.db = getFirestore(window.firebase.app);
-            window.firebase.auth = getAuth(window.firebase.app);
-
-            // Listen for authentication state changes
-            window.firebase.onAuthStateChanged(window.firebase.auth, async (user) => {
-                if (user) {
-                    // User is signed in.
-                    window.currentUserId = user.uid;
-                    console.log("Firebase Auth Ready. User ID:", window.currentUserId);
+        // Listen for authentication state changes
+        window.firebase.onAuthStateChanged(window.firebase.auth, async (user) => {
+            if (user) {
+                // User is signed in.
+                window.currentUserId = user.uid;
+                console.log("Firebase Auth Ready. User ID:", window.currentUserId);
+                window.isFirebaseReady = true;
+                // Trigger initial meme display after auth is ready
+                if (typeof window.initMemeDisplay === 'function') {
+                    window.initMemeDisplay();
+                }
+            } else {
+                // User is signed out, try to sign in anonymously
+                try {
+                    await window.firebase.signInAnonymously(window.firebase.auth);
+                } catch (error) {
+                    console.error("Error signing in anonymously:", error);
+                    // Fallback to a random ID if anonymous sign-in fails
+                    // Note: Firestore rules might still block access without proper auth.
+                    window.currentUserId = crypto.randomUUID();
                     window.isFirebaseReady = true;
-                    // Trigger initial meme display after auth is ready
                     if (typeof window.initMemeDisplay === 'function') {
                         window.initMemeDisplay();
                     }
-                } else {
-                    // User is signed out, try to sign in anonymously or with custom token
-                    try {
-                        if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                            await window.firebase.signInWithCustomToken(window.firebase.auth, __initial_auth_token);
-                        } else {
-                            await window.firebase.signInAnonymously(window.firebase.auth);
-                        }
-                    } catch (error) {
-                        console.error("Error signing in:", error);
-                        // Fallback to a random ID if anonymous sign-in fails
-                        window.currentUserId = crypto.randomUUID();
-                        window.isFirebaseReady = true;
-                        if (typeof window.initMemeDisplay === 'function') {
-                            window.initMemeDisplay();
-                        }
-                    }
                 }
-            });
-        } else {
-            console.error("Firebase config is missing or empty. Cannot initialize Firebase.");
-            // Fallback for when Firebase config is not available
-            window.currentUserId = crypto.randomUUID();
-            window.isFirebaseReady = true;
-            if (typeof window.initMemeDisplay === 'function') {
-                window.initMemeDisplay();
             }
-        }
+        });
     </script>
 </head>
 <body class="bg-gray-100">
