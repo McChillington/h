@@ -1,0 +1,835 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>project zoob zoob</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom font for a modern look */
+        body {
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden; /* Prevent horizontal scrollbar from animations */
+            /* Animated Background Styles */
+            background: linear-gradient(135deg, #1a202c, #000000, #044d3a, #1a242f); /* Adjusted dark green and final dark tone */
+            background-size: 400% 400%; /* Make it larger than viewport to enable movement */
+            animation: gradient-animation 15s ease infinite; /* Animate its position */
+        }
+
+        /* Keyframes for the animated background */
+        @keyframes gradient-animation {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Ensure nav is on top of content */
+        nav {
+            position: relative; /* Needed for z-index to work */
+            z-index: 20; /* Higher than content windows */
+        }
+
+        /* Hide the credits container by default */
+        #creditsContainer {
+            display: none;
+            opacity: 0; /* Start hidden for fade-in effect */
+            transform: translateY(10px); /* Start slightly below for slide-up effect */
+            transition: opacity 0.3s ease-out, transform 0.3s ease-out; /* Smooth transition */
+            z-index: 30; /* Ensure it's on top of everything else in the nav */
+        }
+        /* State when visible */
+        #creditsContainer.is-visible {
+            display: flex;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Keyframes for subtle pulse animation on the main title */
+        @keyframes pulse-glow {
+            0%, 100% {
+                text-shadow: 0 0 5px rgba(0, 255, 0, 0.4), 0 0 10px rgba(0, 255, 0, 0.2);
+            }
+            50% {
+                text-shadow: 0 0 15px rgba(0, 255, 0, 0.8), 0 0 25px rgba(0, 255, 0, 0.5);
+            }
+        }
+
+        .animate-pulse-glow {
+            animation: pulse-glow 3s infinite ease-in-out;
+        }
+
+        /* Button press effect */
+        .btn-press:active {
+            transform: scale(0.96); /* Slightly more aggressive press */
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Enhanced Button Hover Effect */
+        .btn-hover-effect {
+            transition: all 0.3s ease-in-out; /* Apply transition to all properties */
+        }
+        .btn-hover-effect:hover {
+            transform: scale(1.03); /* Slightly enlarge */
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.3); /* Add more depth */
+        }
+
+
+        /* Light Mode Styles */
+        body.light-mode {
+            background: linear-gradient(135deg, #e0f2f7, #c1e7e7, #dbe7e7, #e0f2f7); /* Adjusted light green to a softer tone */
+            background-size: 400% 400%;
+            animation: gradient-animation 15s ease infinite;
+        }
+        body.light-mode .bg-gray-800 {
+            background-color: #f0f9ff; /* Lighter nav background */
+        }
+        body.light-mode .bg-gray-800.bg-opacity-90 {
+            background-color: rgba(240, 249, 255, 0.9);
+        }
+        body.light-mode .border-green-700 {
+            border-color: #6ee7b7; /* Lighter border for nav */
+        }
+        body.light-mode h1.text-transparent {
+            background-image: linear-gradient(to right, #059669, #14b8a6); /* Darker green for light mode title */
+        }
+        body.light-mode .text-gray-300 {
+            color: #4b5563; /* Darker text for mobile button (if it were there) */
+        }
+        body.light-mode .text-white {
+            color: #1f2937; /* Darker text for main paragraph */
+        }
+        body.light-mode .bg-gray-700 {
+            background-color: #e2e8f0; /* Lighter background for main paragraph box */
+        }
+        body.light-mode .bg-gray-700.bg-opacity-70 {
+            background-color: rgba(226, 232, 240, 0.7);
+        }
+        body.light-mode #creditsContainer {
+            background-color: rgba(240, 249, 255, 0.9); /* Lighter credits container */
+            border-color: #34d399; /* Lighter green border for credits container */
+        }
+        body.light-mode .border-green-600 {
+            border-color: #34d399; /* Lighter green border for credits container */
+        }
+        body.light-mode .border-gray-600 {
+            border-color: #9ca3af; /* Lighter separator line */
+        }
+        body.light-mode .bg-green-600 {
+            background-color: #10b981; /* Darker green for credits button */
+        }
+        body.light-mode .hover\:bg-green-700:hover {
+            background-color: #059669; /* Darker hover green */
+        }
+        body.light-mode .border-green-500 {
+            border-color: #10b981; /* Darker green for cat image */
+        }
+        body.light-mode .border-blue-500 {
+            border-color: #3b82f6; /* Darker blue for admin image */
+        }
+        /* Link styles */
+        .content-window ul li a, .content-window p a {
+            color: #4ade80; /* green-400 */
+            text-decoration: none;
+            transition: color 0.2s ease-in-out;
+        }
+        .content-window ul li a:hover, .content-window p a:hover {
+            color: #22c55e; /* green-500 on hover */
+            text-decoration: underline;
+        }
+        body.light-mode .content-window ul li a, body.light-mode .content-window p a {
+            color: #16a34a; /* green-700 for links in light mode */
+        }
+        body.light-mode .content-window ul li a:hover, body.light-mode .content-window p a:hover {
+            color: #15803d; /* even darker green on hover in light mode */
+        }
+        /* Custom scrollbar for executor links */
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 8px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #374151; /* gray-700 */
+            border-radius: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #10b981; /* green-600 */
+            border-radius: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #059669; /* green-700 */
+        }
+        body.light-mode .custom-scrollbar::-webkit-scrollbar-track {
+            background: #e2e8f0; /* light background */
+        }
+        body.light-mode .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #059669; /* darker green for light mode */
+        }
+        body.light-mode .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #047857; /* even darker green for light mode */
+        }
+
+        /* Themed window styles */
+        .content-window {
+            opacity: 0; /* Initially hidden for entrance animation */
+            transform: translateY(20px); /* Initially moved down for entrance animation */
+            transition: all 0.7s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* Springy entrance */
+            position: relative; /* Ensure z-index works for content windows */
+            z-index: 10; /* Lower than nav */
+        }
+        .content-window.animate-in {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .content-window:hover {
+            transform: translateY(-12px); /* Lift effect on hover */
+            box-shadow: 0 18px 36px rgba(0, 255, 0, 0.3), 0 6px 12px rgba(0, 0, 0, 0.4); /* Stronger glow shadow */
+        }
+
+        .content-window.about-theme {
+            background-color: rgba(31, 41, 55, 0.7); /* gray-800 with opacity */
+            border-color: #065f46; /* dark green-700 */
+        }
+        .content-window.links-theme {
+            background-color: rgba(17, 24, 39, 0.7); /* gray-900 with opacity */
+            border-color: #047857; /* even darker green-800 */
+        }
+        .content-window.feedback-theme { /* New theme for feedback box */
+            background-color: rgba(23, 33, 47, 0.7); /* Even darker gray with opacity */
+            border-color: #10b981; /* green-600 */
+        }
+        .content-window.honorable-mention-theme { /* New theme for honorable mention box */
+            background-color: rgba(38, 38, 38, 0.7); /* A slightly different dark gray */
+            border-color: #84cc16; /* lime-500 for a distinct green */
+        }
+        .content-window.script-theme { /* New theme for script box */
+            background-color: rgba(10, 20, 30, 0.7); /* Even darker, almost black */
+            border-color: #06b6d4; /* cyan-500 for a techy feel */
+        }
+        .content-window.kind-message-theme { /* New theme for kind message box */
+            background-color: rgba(25, 25, 112, 0.7); /* Midnight blue */
+            border-color: #60a5fa; /* blue-400 for a calm feel */
+        }
+        body.light-mode .content-window.about-theme {
+            background-color: rgba(240, 249, 255, 0.7); /* light background */
+            border-color: #34d399; /* light green-500 */
+        }
+        body.light-mode .content-window.links-theme {
+            background-color: rgba(226, 232, 240, 0.7); /* light background */
+            border-color: #10b981; /* light green-600 */
+        }
+        body.light-mode .content-window.feedback-theme { /* Light mode for feedback box */
+            background-color: rgba(255, 255, 255, 0.8); /* white with opacity */
+            border-color: #059669; /* green-700 */
+        }
+        body.light-mode .content-window.honorable-mention-theme { /* Light mode for honorable mention box */
+            background-color: rgba(248, 250, 252, 0.8); /* even lighter background */
+            border-color: #65a30d; /* lime-700 */
+        }
+        body.light-mode .content-window.script-theme { /* Light mode for script box */
+            background-color: rgba(224, 242, 254, 0.8); /* light blue for script */
+            border-color: #0ea5e9; /* sky-500 */
+        }
+        body.light-mode .content-window.kind-message-theme { /* Light mode for kind message box */
+            background-color: rgba(239, 246, 255, 0.8); /* Lighter blue */
+            border-color: #3b82f6; /* blue-500 */
+        }
+
+        /* Specific styling for the feedback textarea in light mode */
+        body.light-mode #feedbackMessage {
+            background-color: rgba(255, 255, 255, 0.9); /* Lighter background for textarea in light mode */
+            color: #1f2937; /* Darker text */
+            border-color: #34d399; /* Green border */
+        }
+        body.light-mode #feedbackMessage::placeholder {
+            color: #6b7280; /* Darker placeholder */
+        }
+
+        /* Styling for the random image and its animation */
+        .random-image {
+            max-width: 100%; /* Ensure it's responsive */
+            height: auto; /* Maintain aspect ratio */
+            border-radius: 0.75rem; /* rounded-xl */
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2), 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+            border: 2px solid #10b981; /* green-600 border */
+            transition: transform 0.3s ease-out, box-shadow 0.3s ease-out, filter 0.3s ease-in-out; /* Smooth hover effects */
+            cursor: pointer; /* Indicate it's clickable */
+        }
+        .random-image:hover {
+            transform: scale(1.02); /* Slightly enlarge on hover */
+            box-shadow: 0 15px 30px rgba(0, 255, 0, 0.3), 0 5px 10px rgba(0, 0, 0, 0.4); /* Stronger glow shadow on hover */
+            filter: brightness(1.1) saturate(1.1); /* Slight filter on hover */
+        }
+
+        /* Keyframes for the click animation */
+        @keyframes image-pop-rotate {
+            0% {
+                transform: scale(1) rotate(0deg);
+            }
+            50% {
+                transform: scale(1.05) rotate(5deg); /* Pop out and rotate */
+            }
+            100% {
+                transform: scale(1) rotate(0deg); /* Return to original state */
+            }
+        }
+
+        .random-image.animate-click {
+            animation: image-pop-rotate 0.3s ease-out; /* Apply animation on click */
+        }
+
+        /* Footer styling */
+        .footer-text {
+            color: #a8a29e; /* gray-400 */
+            font-size: 0.75rem; /* text-xs */
+            text-align: center;
+            padding: 1rem;
+            width: 100%;
+            background-color: rgba(17, 24, 39, 0.7); /* gray-900 with opacity */
+            border-top: 1px solid #047857; /* green-800 border */
+            margin-top: auto; /* Push to the bottom */
+        }
+        body.light-mode .footer-text {
+            color: #4b5563; /* Darker gray for light mode */
+            background-color: rgba(240, 249, 255, 0.7); /* light background */
+            border-top-color: #34d399; /* light green-500 */
+        }
+
+        /* Logo hover effect */
+        .logo-hover-effect {
+            transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out, filter 0.3s ease-in-out;
+        }
+        .logo-hover-effect:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 20px rgba(0, 255, 0, 0.3);
+            filter: brightness(1.2) saturate(1.2);
+        }
+
+        /* Credits images hover effect */
+        #catImage, #adminImage {
+            transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out, filter 0.3s ease-in-out;
+        }
+        #catImage:hover, #adminImage:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+            filter: brightness(1.1) saturate(1.1);
+        }
+
+        /* Loading Screen Styles */
+        #loadingScreen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9); /* Dark semi-transparent overlay */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 100; /* Ensure it's on top of everything */
+            transition: opacity 0.5s ease-out; /* Smooth fade out */
+            opacity: 1; /* Start visible */
+        }
+
+        #loadingScreen.hidden {
+            opacity: 0;
+            pointer-events: none; /* Allow clicks through once hidden */
+        }
+
+        .spinner {
+            border: 8px solid rgba(255, 255, 255, 0.3);
+            border-top: 8px solid #4ade80; /* Green spinner */
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            color: #4ade80; /* Green text */
+            font-size: 1.5rem;
+            margin-top: 1rem;
+            font-weight: bold;
+            text-shadow: 0 0 5px rgba(74, 222, 128, 0.6); /* Subtle glow */
+        }
+
+        /* Light mode for loading screen */
+        body.light-mode #loadingScreen {
+            background-color: rgba(255, 255, 255, 0.9);
+        }
+        body.light-mode .spinner {
+            border-top: 8px solid #16a34a; /* Darker green for light mode */
+        }
+        body.light-mode .loading-text {
+            color: #16a34a; /* Darker green for light mode */
+            text-shadow: 0 0 5px rgba(22, 163, 74, 0.6);
+        }
+
+    </style>
+</head>
+<body class="min-h-screen flex flex-col relative">
+    <div id="loadingScreen">
+        <div class="spinner"></div>
+        <div class="loading-text">loading project zoob zoob...</div>
+    </div>
+
+    <nav class="bg-gray-800 bg-opacity-90 backdrop-blur-sm p-4 shadow-xl rounded-b-xl flex flex-col md:flex-row items-center justify-between w-full border-b-2 border-green-700 space-y-4 md:space-y-0">
+        <div class="flex items-center space-x-4">
+            <img src="https://uploads.dailydot.com/2024/09/alien-cult-1.jpg?q=65&auto=format&w=1200"
+                 alt="project zoob zoob logo"
+                 class="h-12 w-12 md:h-16 md:w-16 rounded-full object-cover shadow-lg border-2 border-green-600 logo-hover-effect"
+                 onerror="this.onerror=null;this.src='https://placehold.co/100x100/A855F7/FFFFFF?text=logo';">
+            <h1 class="text-3xl md:text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-green-500 to-teal-500 drop-shadow-md animate-pulse-glow">
+                project zoob zoob
+            </h1>
+        </div>
+
+        <div class="flex flex-col items-center space-y-2 w-full md:flex-row md:space-x-4 md:space-y-0 md:w-auto md:justify-center">
+            <div class="relative w-full md:w-auto">
+                <button id="creditsButton"
+                        class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-full shadow-lg transition-all duration-200 ease-in-out btn-press btn-hover-effect w-full">
+                    credits
+                </button>
+                <div id="creditsContainer" class="absolute left-1/2 transform -translate-x-1/2 mt-2 flex flex-col items-center space-y-4 bg-gray-700 bg-opacity-90 p-6 rounded-xl shadow-2xl border-2 border-green-600 w-max min-w-[200px]">
+                    <div class="flex flex-col items-center space-y-3">
+                        <img id="catImage"
+                             src="https://cdn.discordapp.com/attachments/1347404209221406721/1376962534929731705/IMG_3985.jpg?ex=68373bcb&is=6835ea4b&hm=8f4312dbe3668ee26aa0a33a1dfe1b9da0c55550f843977ff7568253945eea12&"
+                             alt="vakat's profile image"
+                             class="max-w-[120px] md:max-w-[150px] rounded-lg shadow-md border-2 border-green-500">
+                        <p id="creditsName" class="text-white text-lg font-semibold text-shadow-sm">vakat: server owner</p>
+                    </div>
+
+                    <div class="flex flex-col items-center space-y-3 pt-4 border-t border-gray-600 w-full">
+                        <img id="adminImage"
+                             src="https://preview.redd.it/there-is-no-meme-just-cat-pics-v0-wqm1rr5665ib1.jpg?width=719&format=pjpg&auto=webp&s=411f271a1641e356bdfaffd11e16a9112a5b3249"
+                             alt="cat in a box"
+                             class="max-w-[120px] md:max-w-[150px] rounded-lg shadow-md border-2 border-blue-500">
+                        <p id="adminName" class="text-white text-lg font-semibold text-shadow-sm">guy6942021: head admin</p>
+                    </div>
+                </div>
+            </div>
+
+            <a id="discordTopBarButton" href="https://discord.gg/NXBVRSfv7t" target="_blank" rel="noopener noreferrer"
+               class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full shadow-lg transition-colors duration-300 btn-press btn-hover-effect w-full md:w-auto">
+                discord
+            </a>
+
+            <button id="themeToggle"
+                    class="bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-full shadow-lg transition-colors duration-300 btn-press btn-hover-effect w-full md:w-auto">
+                toggle theme
+            </button>
+
+            <button id="refreshButton"
+                    class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded-full shadow-lg transition-colors duration-300 btn-press btn-hover-effect w-full md:w-auto">
+                refresh website
+            </button>
+        </div>
+    </nav>
+
+    <main class="flex-grow flex flex-col items-center justify-center p-4">
+        <div class="flex flex-wrap justify-center gap-8 p-4 w-full max-w-5xl">
+
+            <div class="content-window kind-message-theme text-white text-base md:text-lg p-6 rounded-xl shadow-lg border-2 w-full md:w-1/3 lg:w-1/4 flex-grow flex flex-col items-center justify-center">
+                <h2 class="text-2xl font-bold mb-4 text-blue-300 text-center">daily kindness</h2>
+                <p id="kindMessageText" class="text-center"></p>
+            </div>
+
+            <div class="content-window about-theme text-center text-white text-xl md:text-2xl font-medium p-6 rounded-xl shadow-lg border-2 w-full md:w-1/3 lg:w-1/4 flex-grow">
+                <p>project zoob zoob is a discord server where people can share knowledge, setups, and info about pc's. we may even do nitro giveaways? join our discord server you dont want to miss it! <a href="https://discord.gg/NXBVRSfv7t" target="_blank" rel="noopener noreferrer">join our discord server here!</a></p>
+            </div>
+
+            <div class="content-window links-theme text-left text-white text-base md:text-lg p-6 rounded-xl shadow-lg border-2 w-full md:w-1/3 lg:w-1/4 flex-grow max-h-96 overflow-y-auto custom-scrollbar">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-2xl font-bold text-green-300">random websites</h2>
+                    <p id="dataSourceText" class="text-gray-300 text-sm md:text-base text-right">data from the project zoob zoob discord</p>
+                </div>
+                <ul class="space-y-2">
+                    <li><a href="https://theuselessweb.com/" target="_blank" rel="noopener noreferrer">the useless web</a></li>
+                    <li><a href="https://pointerpointer.com/" target="_blank" rel="noopener noreferrer">pointer pointer</a></li>
+                    <li><a href="https://neal.fun/" target="_blank" rel="noopener noreferrer">neal.fun</a></li>
+                    <li><a href="https://driveandlisten.herokuapp.com/" target="_blank" rel="noopener noreferrer">drive & listen</a></li>
+                    <li><a href="https://thispersondoesnotexist.com/" target="_blank" rel="noopener noreferrer">this person does not exist</a></li>
+                    <li><a href="https://patatap.com/" target="_blank" rel="noopener noreferrer">patatap</a></li>
+                    <li><a href="http://radio.garden/live/global/null/" target="_blank" rel="noopener noreferrer">radio garden</a></li>
+                    <li><a href="https://littlealchemy2.com/" target="_blank" rel="noopener noreferrer">little alchemy 2</a></li>
+                    <li><a href="https://archive.org/web/" target="_blank" rel="noopener noreferrer">internet archive (wayback machine)</a></li>
+                    <li><a href="http://zoomquilt.org/" target="_blank" rel="noopener noreferrer">zoom quilt</a></li>
+                    <li><a href="https://www.geoguessr.com/" target="_blank" rel="noopener noreferrer">geoguessr</a></li>
+                </ul>
+            </div>
+
+            <div class="content-window feedback-theme text-white text-base md:text-lg p-6 rounded-xl shadow-lg border-2 w-full md:w-1/3 lg:w-1/4 flex-grow flex flex-col">
+                <h2 class="text-2xl font-bold mb-4 text-green-300 text-center">feedback</h2>
+                <p class="text-gray-300 text-sm mb-2 text-center">send a message to me anonymously!</p>
+                <textarea id="feedbackMessage"
+                          class="w-full h-32 p-3 rounded-lg bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 mb-4 resize-none"
+                          placeholder="type your feedback here..."
+                          style="background-color: rgba(55, 65, 81, 0.8);"></textarea>
+                <button id="sendFeedbackButton"
+                        class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-full shadow-lg transition-colors duration-300 btn-press btn-hover-effect">
+                    send feedback
+                </button>
+                <p id="feedbackStatus" class="text-center mt-2 text-sm"></p>
+            </div>
+
+            <div class="content-window script-theme text-white text-base md:text-lg p-6 rounded-xl shadow-lg border-2 w-full md:w-1/3 lg:w-1/4 flex-grow flex flex-col items-center justify-center">
+                <h2 class="text-2xl font-bold mb-4 text-cyan-300 text-center">changelog:</h2>
+                <p class="text-gray-300 text-center">changelog is currently unavailable.</p>
+            </div>
+
+            <div class="content-window honorable-mention-theme text-white text-base md:text-lg p-6 rounded-xl shadow-lg border-2 w-full md:w-1/3 lg:w-1/4 flex-grow flex flex-col items-center justify-center">
+                <h2 class="text-2xl font-bold mb-4 text-green-300 text-center">honorable mention</h2>
+                <div class="image-with-text-container">
+                    <img id="honorableMentionImage"
+                         src="https://th.bing.com/th/id/OIP.rN7jjTyeZ-QU6FkDRK5M8wHaF0?cb=iwc2&rs=1&pid=ImgDetMain"
+                         alt="random image"
+                         class="random-image"
+                         onerror="this.onerror=null;this.src='https://placehold.co/400x300/6B7280/FFFFFF?text=image';">
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <footer class="footer-text">
+        <p id="footerMessage">you've hit rock bottom</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Loading screen element
+            const loadingScreen = document.getElementById('loadingScreen');
+
+            // Desktop elements
+            const creditsButton = document.getElementById('creditsButton');
+            const creditsContainer = document.getElementById('creditsContainer');
+            const discordTopBarButton = document.getElementById('discordTopBarButton');
+            const themeToggle = document.getElementById('themeToggle');
+            const refreshButton = document.getElementById('refreshButton'); // New refresh button
+
+            const body = document.body;
+            const dataSourceText = document.getElementById('dataSourceText');
+            const feedbackMessage = document.getElementById('feedbackMessage');
+            const sendFeedbackButton = document.getElementById('sendFeedbackButton');
+            const feedbackStatus = document.getElementById('feedbackStatus');
+            const honorableMentionImage = document.getElementById('honorableMentionImage');
+            const footerMessage = document.getElementById('footerMessage');
+            const changelogText = document.querySelector('.content-window.script-theme p');
+            const kindMessageText = document.getElementById('kindMessageText');
+            const contentWindows = document.querySelectorAll('.content-window'); // Select all content windows
+
+            // Discord Webhook URL
+            const DISCORD_WEBHOOK_URL = 'https://discord.com/api/webhooks/1375697594789138533/s4foPQoNi7MEOuThfvEPuKPbmKBAW-yDd7vMgJzE9c0kgS30Q59wiY9F4mUpGtIbQhar';
+
+            // Array of 100+ kind messages (already lowercase)
+            const kindMessages = [
+                "you are capable of amazing things.",
+                "your strength is inspiring.",
+                "don't forget to smile today.",
+                "you are loved more than you know.",
+                "take a moment to breathe and relax.",
+                "your potential is limitless.",
+                "believe in yourself, you've got this.",
+                "every day is a new beginning.",
+                "your kindness makes a difference.",
+                "you are stronger than you think.",
+                "embrace the journey, not just the destination.",
+                "your unique perspective is valuable.",
+                "find joy in the little things.",
+                "you are a bright light in the world.",
+                "keep shining, you're doing great.",
+                "challenges make you stronger.",
+                "you are worthy of all good things.",
+                "spread positivity wherever you go.",
+                "your presence is a gift.",
+                "never stop learning and growing.",
+                "you bring so much joy to others.",
+                "be proud of how far you've come.",
+                "your resilience is admirable.",
+                "take care of yourself, you deserve it.",
+                "you are a true inspiration.",
+                "your efforts are appreciated.",
+                "today is a good day to be happy.",
+                "you are a star, shine brightly.",
+                "your spirit is beautiful.",
+                "find beauty in every day.",
+                "you make the world a better place.",
+                "keep pushing forward, you're almost there.",
+                "your dreams are within reach.",
+                "you are a beacon of hope.",
+                "let your heart guide you.",
+                "you are a masterpiece.",
+                "your laughter is contagious.",
+                "embrace your inner peace.",
+                "you are truly special.",
+                "your courage is remarkable.",
+                "find strength in vulnerability.",
+                "you are a force of nature.",
+                "your wisdom shines through.",
+                "cherish every moment.",
+                "you are a gift to humanity.",
+                "your compassion is a blessing.",
+                "let your creativity flow.",
+                "you are a true visionary.",
+                "your positive energy is infectious.",
+                "find adventure in the everyday.",
+                "you are a joy to be around.",
+                "your passion is inspiring.",
+                "embrace change and grow.",
+                "you are a true survivor.",
+                "your determination is admirable.",
+                "find peace in stillness.",
+                "you are a source of comfort.",
+                "your empathy is a superpower.",
+                "let your imagination soar.",
+                "you are a true innovator.",
+                "your optimism is a gift.",
+                "find happiness in simplicity.",
+                "you are a true friend.",
+                "your loyalty is unwavering.",
+                "embrace your inner strength.",
+                "you are a true leader.",
+                "your integrity is impeccable.",
+                "find wonder in the world.",
+                "you are a true artist.",
+                "your creativity knows no bounds.",
+                "let your light guide the way.",
+                "you are a true hero.",
+                "your bravery is inspiring.",
+                "find solace in nature.",
+                "you are a true healer.",
+                "your wisdom is profound.",
+                "cherish your loved ones.",
+                "you are a true blessing.",
+                "your generosity is heartwarming.",
+                "let your spirit be free.",
+                "you are a true explorer.",
+                "your curiosity is endless.",
+                "find beauty in imperfection.",
+                "you are a true mentor.",
+                "your guidance is invaluable.",
+                "embrace your true self.",
+                "you are a true champion.",
+                "your perseverance is incredible.",
+                "find joy in self-discovery.",
+                "you are a true visionary.",
+                "your ideas are brilliant.",
+                "let your dreams take flight.",
+                "you are a true inspiration.",
+                "your journey is unique.",
+                "find strength in every step.",
+                "you are a true marvel.",
+                "your spirit is indomitable.",
+                "embrace the unknown.",
+                "you are a true gem.",
+                "your presence brightens lives.",
+                "find peace in your heart.",
+                "you are a true miracle.",
+                "your existence is precious.",
+                "let your heart be full.",
+                "you are a true gift.",
+                "your light illuminates others.",
+                "find joy in every breath.",
+                "you are a true wonder.",
+                "your soul is beautiful.",
+                "embrace the present moment."
+            ];
+
+            // Function to toggle visibility for the credits container
+            function toggleCreditsContainer(button, container) {
+                if (container.classList.contains('is-visible')) {
+                    container.classList.remove('is-visible');
+                    button.textContent = 'credits';
+                } else {
+                    container.classList.add('is-visible');
+                    button.textContent = 'hide credits';
+                }
+            }
+
+            // Event listeners for credits button
+            creditsButton.addEventListener('click', () => {
+                toggleCreditsContainer(creditsButton, creditsContainer);
+            });
+
+            // Event listener for refresh button
+            refreshButton.addEventListener('click', () => {
+                location.reload(); // Reloads the current page
+            });
+
+
+            // Theme toggle logic
+            function applyTheme(theme) {
+                if (theme === 'light') {
+                    body.classList.add('light-mode');
+                } else {
+                    body.classList.remove('light-mode');
+                }
+            }
+
+            // Unified theme toggle handler
+            const handleThemeToggle = () => {
+                if (body.classList.contains('light-mode')) {
+                    applyTheme('dark');
+                    localStorage.setItem('theme', 'dark');
+                } else {
+                    applyTheme('light');
+                    localStorage.setItem('theme', 'light');
+                }
+            };
+
+            themeToggle.addEventListener('click', handleThemeToggle);
+
+
+            // Apply saved theme on load
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            applyTheme(savedTheme);
+
+            // Function to send feedback to Discord webhook
+            sendFeedbackButton.addEventListener('click', async () => {
+                const message = feedbackMessage.value.trim();
+                if (!message) {
+                    feedbackStatus.textContent = 'please enter a message.';
+                    feedbackStatus.style.color = '#ef4444'; /* red-500 */
+                    return;
+                }
+
+                sendFeedbackButton.disabled = true;
+                sendFeedbackButton.textContent = 'sending...';
+                feedbackStatus.textContent = ''; // Clear previous status
+
+                // Constructing the embed payload
+                const embed = {
+                    title: 'new feedback received (anonymous)', // Updated title for clarity
+                    description: message,
+                    color: parseInt('2ECC71', 16), // A nice green color (decimal value of #2ECC71)
+                    timestamp: new Date().toISOString(), // ISO 8601 timestamp for Discord
+                    fields: [
+                        {
+                            name: 'timestamp (client-side)',
+                            value: new Date().toLocaleString(), // More human-readable local time
+                            inline: true
+                        }
+                    ],
+                    footer: {
+                        text: 'project zoob zoob feedback'
+                    }
+                };
+
+                try {
+                    const response = await fetch(DISCORD_WEBHOOK_URL, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ embeds: [embed] }), // Sending as an embed
+                    });
+
+                    if (response.ok) {
+                        feedbackStatus.textContent = 'feedback sent successfully!';
+                        feedbackStatus.style.color = '#22c55e'; /* green-500 */
+                        feedbackMessage.value = ''; // Clear textarea
+                    } else {
+                        const errorText = await response.text();
+                        feedbackStatus.textContent = `failed to send feedback: ${response.status} ${errorText.substring(0, 50)}...`;
+                        feedbackStatus.style.color = '#ef4444'; /* red-500 */
+                    }
+                } catch (error) {
+                    feedbackStatus.textContent = `an error occurred: ${error.message}`;
+                    feedbackStatus.style.color = '#ef4444'; /* red-500 */
+                } finally {
+                    sendFeedbackButton.disabled = false;
+                    sendFeedbackButton.textContent = 'send feedback';
+                }
+            });
+
+            // Animation for honorable mention image
+            if (honorableMentionImage) {
+                honorableMentionImage.addEventListener('click', () => {
+                    // Add the animation class
+                    honorableMentionImage.classList.add('animate-click');
+
+                    // Remove the class after the animation completes
+                    honorableMentionImage.addEventListener('animationend', () => {
+                        honorableMentionImage.classList.remove('animate-click');
+                    }, { once: true }); // Use { once: true } to ensure the listener is removed after one execution
+                });
+            }
+
+            // Function to display a random kind message
+            function displayRandomKindMessage() {
+                const randomIndex = Math.floor(Math.random() * kindMessages.length);
+                kindMessageText.textContent = kindMessages[randomIndex];
+            }
+
+            // Display a random kind message on load
+            displayRandomKindMessage();
+
+            // Staggered entrance animation for content windows
+            contentWindows.forEach((window, index) => {
+                setTimeout(() => {
+                    window.classList.add('animate-in');
+                }, 100 * index); // Stagger by 100ms for each window
+            });
+
+            // Function to convert all relevant text content to lowercase
+            function convertTextToLowercase() {
+                const textElements = document.querySelectorAll(
+                    'h1, p:not(#kindMessageText), button, a, img[alt], h2, textarea::placeholder' /* Exclude kindMessageText from lowercasing */
+                );
+
+                textElements.forEach(element => {
+                    // Check if element.textContent exists before trying to modify it
+                    if (element.textContent !== undefined && element.id !== 'creditsName' && element.id !== 'adminName') {
+                        element.textContent = element.textContent.toLowerCase();
+                    }
+                    if (element.tagName === 'IMG' && element.alt) {
+                        element.alt = element.alt.toLowerCase();
+                    }
+                    if (element.tagName === 'TEXTAREA' && element.placeholder) {
+                        element.placeholder = element.placeholder.toLowerCase();
+                    }
+                });
+
+                // Manually set specific elements that are dynamically changed by JS
+                if (creditsButton) {
+                    creditsButton.textContent = creditsButton.textContent.toLowerCase();
+                }
+                if (themeToggle) {
+                    themeToggle.textContent = 'toggle theme';
+                }
+                if (discordTopBarButton) {
+                    discordTopBarButton.textContent = 'discord';
+                }
+                if (refreshButton) { // New refresh button
+                    refreshButton.textContent = 'refresh website';
+                }
+                if (dataSourceText) {
+                    dataSourceText.textContent = dataSourceText.textContent.toLowerCase();
+                }
+                if (sendFeedbackButton) {
+                    sendFeedbackButton.textContent = 'send feedback';
+                }
+                if (footerMessage) {
+                    footerMessage.textContent = footerMessage.textContent.toLowerCase();
+                }
+                if (changelogText) {
+                    changelogText.textContent = changelogText.textContent.toLowerCase();
+                }
+            }
+
+            convertTextToLowercase();
+
+            // Hide loading screen once everything is loaded
+            window.addEventListener('load', () => {
+                setTimeout(() => {
+                    loadingScreen.classList.add('hidden');
+                }, 2000); // 2000 milliseconds = 2 seconds
+            });
+        });
+    </script>
+</body>
+</html>
